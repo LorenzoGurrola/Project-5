@@ -2,6 +2,7 @@ import unittest
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import torch
+import torch.nn as nn
 import platform
 
 if True:
@@ -22,7 +23,7 @@ class test_forward(unittest.TestCase):
     def test_basic(self):
         m = 3
         n = 8
-        H = [n, 5, 3, 1]
+        H = [n, 3, 1]
 
         L = len(H) - 1
         X = np.random.randn(m, n)
@@ -32,11 +33,16 @@ class test_forward(unittest.TestCase):
 
         model = Network(H)
         state = model.state_dict()
-        for l in range(1, L+1):
-            state['l' + str(l) + '.weight'] = torch.tensor(params['W' + str(l)])
-            #print(f'model params W{str(l)} {params['W' + str(l)]}')
-            #print(f'PYTORCH params l{str(l)} {state['l' + str(l) + '.weight']}')
-            state['l' + str(l) + '.bias'] = torch.tensor(params['b' + str(l)])
+        # for l in range(1, L+1):
+        #     state['l' + str(l) + '.weight'] = torch.tensor(params['W' + str(l)])
+        #     print(f'model params W{str(l)} {params['W' + str(l)]}')
+        #     print(f'PYTORCH params l{str(l)} {state['l' + str(l) + '.weight']}')
+        #     state['l' + str(l) + '.bias'] = torch.tensor(params['b' + str(l)].T)
+
+        model.layers['l1'].weight = nn.Parameter(torch.tensor(params['W1'].T))
+        model.layers['l1'].bias = nn.Parameter(torch.tensor(params['b1']))
+        model.layers['l2'].weight = nn.Parameter(torch.tensor(params['W2'].T))
+        model.layers['l2'].bias = nn.Parameter(torch.tensor(params['b2']))
 
         X = torch.tensor(X, dtype=torch.float32)
         activations2, inter_values2 = model.forward(X, H)

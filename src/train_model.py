@@ -48,12 +48,15 @@ def sigmoid(z):
     return a
 
 def forward(X, params, H):
-    values = {'A0':X}
+    activations = {'A0':X}
+    inter_values = {}
     for l in range(1, len(H)):
-        values['Z' + str(l)] = values['A' + str(l-1)] @ params['W' + str(l)] + params['b' + str(l)]
+        inter_values['Z' + str(l)] = activations['A' + str(l-1)] @ params['W' + str(l)] + params['b' + str(l)]
         if(l < len(H) - 1): #ReLU until last layer, then sigmoid
-            values['A' + str(l)] = relu(values['Z' + str(l)])
+            activations['A' + str(l)] = relu(inter_values['Z' + str(l)])
+            #print(f'model activations A{str(l)} {activations['A' + str(l)]}')
         else:
-            values['A' + str(l)] = sigmoid(values['Z' + str(l)])
+            activations['A' + str(l)] = sigmoid(inter_values['Z' + str(l)])
+            #print(f'model activations A{str(l)} {activations['A' + str(l)]}')
 
-    return values
+    return activations, inter_values

@@ -1,5 +1,6 @@
 import numpy as np
-import os
+from sklearn.model_selection import train_test_split
+import pandas as pd
 
 
 class Scaler:
@@ -19,6 +20,14 @@ class Scaler:
 
     def unstandardize(self, data):
         return (data * self.params['std_dev']) + self.params['mean']
+    
+def load_sets():
+    data = pd.read_csv('../framingham.csv')
+    data = data.dropna()
+    train, test = train_test_split(data, train_size=0.85, random_state=10)
+    X_train, y_train, scalers = prepare_train(train)
+    X_test, y_test = prepare_test(test, scalers)
+    return X_train, y_train, X_test, y_test
     
 def one_hot_encode(data):
     data = [str(item) for item in data]
